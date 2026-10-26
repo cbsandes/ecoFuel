@@ -49,9 +49,140 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
     return double.tryParse(texto.replaceAll(',', '.').trim()) ?? 0.0;
   }
 
+  // Abre a janela flutuante com as informações detalhadas do abastecimento selecionado
+  Future<void> _mostrarDetalhesAbastecimento(Abastecimento item) async {
+    await showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.local_gas_station, color: Colors.blueGrey),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Detalhes do Abastecimento (${item.data})',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Posto: ${item.posto}',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.blueGrey,
+                  ),
+                ),
+                const Divider(height: 20),
+                _buildLinhaDetalhe('Placa:', item.placaVeiculo),
+                _buildLinhaDetalhe('Tipo veículo:', item.tipoVeiculo),
+                _buildLinhaDetalhe('Combustível:', item.tipoCombustivel),
+                _buildLinhaDetalhe(
+                  'KM antes no último abastecimento:',
+                  '${item.kmAnterior.toStringAsFixed(1)} KM',
+                ),
+                _buildLinhaDetalhe(
+                  'KM no abastecimento mais recente:',
+                  '${item.kmAtual.toStringAsFixed(1)} KM',
+                ),
+                _buildLinhaDetalhe(
+                  'Diferença (KM):',
+                  '${item.kmRodados.toStringAsFixed(1)} KM',
+                  destaque: true,
+                ),
+                _buildLinhaDetalhe(
+                  'Litros:',
+                  '${item.litros.toStringAsFixed(2)} L',
+                ),
+                _buildLinhaDetalhe(
+                  'R\$/litro:',
+                  'R\$ ${item.precoPorLitro.toStringAsFixed(2)}',
+                ),
+                const Divider(height: 20),
+                _buildLinhaDetalhe(
+                  'Média deste abastecimento:',
+                  '${item.kmPorLitro.toStringAsFixed(2)} KM/L',
+                  destaque: true,
+                ),
+                _buildLinhaDetalhe(
+                  'Total gasto:',
+                  'R\$ ${item.totalGasto.toStringAsFixed(2)}',
+                  destaque: true,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton.icon(
+              onPressed: () {
+                Navigator.pop(ctx);
+                _abrirFormularioAbastecimento(editando: item);
+              },
+              icon: const Icon(Icons.edit, color: Colors.orange),
+              label: const Text('Editar'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Fechar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Widget auxiliar para formatar cada linha da janela flutuante de detalhes
+  Widget _buildLinhaDetalhe(String rotulo, String valor,
+      {bool destaque = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 3,
+            child: Text(
+              rotulo,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 2,
+            child: Text(
+              valor,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: destaque ? FontWeight.bold : FontWeight.w500,
+                color: destaque ? Colors.indigo : Colors.black,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // Abre modal para Adicionar novo abastecimento ou Editar existente
   Future<void> _abrirFormularioAbastecimento({Abastecimento? editando}) async {
-    // Sugere automaticamente o último KM registrado ou o KM inicial do veículo
     double ultimoKmSugerido = widget.veiculo.kmInicial;
     if (_listaMes.isNotEmpty && editando == null) {
       ultimoKmSugerido = _listaMes.last.kmAtual;
@@ -139,7 +270,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                         keyboardType: const TextInputType.numberWithOptions(
                             decimal: true),
                         decoration: const InputDecoration(
-                          labelText: '1 - KM Total do Último Abastecimento',
+                          labelText: '1 - KM antes no último abastecimento',
                         ),
                         validator: (v) => v == null || v.isEmpty
                             ? 'Informe o KM anterior'
@@ -151,11 +282,11 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                         keyboardType: const TextInputType.numberWithOptions(
                             decimal: true),
                         decoration: const InputDecoration(
-                          labelText: '2 - KM Total Mais Recente',
+                          labelText: '2 - KM no abastecimento mais recente',
                         ),
                         validator: (v) {
                           if (v == null || v.isEmpty) {
-                            return 'Informe o KM atual';
+                            return 'Informe o KM mais recente';
                           }
                           final ant = _parseDecimal(kmAnteriorCtrl.text);
                           final atu = _parseDecimal(v);
@@ -245,7 +376,6 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
       return 'Sem dados suficientes no mês';
     }
 
-    // Calcula a meta ponderada conforme os abastecimentos do mês (Gasolina vs Álcool)
     double somaMetas = 0;
     for (final a in _listaMes) {
       somaMetas += a.tipoCombustivel == 'Gasolina'
@@ -307,7 +437,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // TABELA DE ABASTECIMENTOS DO MÊS
+            // TABELA DE ABASTECIMENTOS DO MÊS (FILTRADA)
             Card(
               elevation: 2,
               child: Padding(
@@ -322,7 +452,12 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Dica: Clique em qualquer abastecimento da tabela para abrir a janela flutuante com todos os detalhes de KM, veículo e combustível.',
+                      style: TextStyle(fontSize: 13, color: Colors.black54),
+                    ),
+                    const SizedBox(height: 10),
                     _listaMes.isEmpty
                         ? const Padding(
                             padding: EdgeInsets.all(24.0),
@@ -335,46 +470,29 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                         : SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: DataTable(
+                              showCheckboxColumn: false,
                               headingRowColor: WidgetStateProperty.all(
                                 Colors.blueGrey.shade100,
                               ),
                               columns: const [
                                 DataColumn(label: Text('Data')),
                                 DataColumn(label: Text('Posto')),
-                                DataColumn(label: Text('Placa')),
-                                DataColumn(label: Text('Tipo')),
-                                DataColumn(label: Text('Combustível')),
-                                DataColumn(label: Text('KM Último')),
-                                DataColumn(label: Text('KM Recente')),
-                                DataColumn(label: Text('Diferença (KM)')),
-                                DataColumn(label: Text('Litros')),
-                                DataColumn(label: Text('R\$/Litro')),
+                                DataColumn(label: Text('Litros Abastecidos')),
                                 DataColumn(label: Text('KM/Litro')),
                                 DataColumn(label: Text('Total Gasto')),
-                                DataColumn(label: Text('Editar / Excluir')),
+                                DataColumn(label: Text('Ações')),
                               ],
                               rows: _listaMes.map((a) {
                                 return DataRow(
+                                  // Ao clicar na linha, abre a janela flutuante com as informações restantes
+                                  onSelectChanged: (_) =>
+                                      _mostrarDetalhesAbastecimento(a),
                                   cells: [
                                     DataCell(Text(a.data)),
                                     DataCell(Text(a.posto)),
-                                    DataCell(Text(a.placaVeiculo)),
-                                    DataCell(Text(a.tipoVeiculo)),
-                                    DataCell(Text(a.tipoCombustivel)),
                                     DataCell(
-                                        Text(a.kmAnterior.toStringAsFixed(1))),
-                                    DataCell(
-                                        Text(a.kmAtual.toStringAsFixed(1))),
-                                    DataCell(
-                                      Text(
-                                        a.kmRodados.toStringAsFixed(1),
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
+                                      Text('${a.litros.toStringAsFixed(2)} L'),
                                     ),
-                                    DataCell(Text(a.litros.toStringAsFixed(2))),
-                                    DataCell(Text(
-                                        'R\$ ${a.precoPorLitro.toStringAsFixed(2)}')),
                                     DataCell(
                                       Text(
                                         '${a.kmPorLitro.toStringAsFixed(2)} KM/L',
@@ -398,16 +516,29 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           IconButton(
-                                            icon: const Icon(Icons.edit,
-                                                color: Colors.orange),
+                                            icon: const Icon(
+                                              Icons.visibility,
+                                              color: Colors.blueGrey,
+                                            ),
+                                            tooltip: 'Ver detalhes completos',
+                                            onPressed: () =>
+                                                _mostrarDetalhesAbastecimento(a),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(
+                                              Icons.edit,
+                                              color: Colors.orange,
+                                            ),
                                             tooltip: 'Editar abastecimento',
                                             onPressed: () =>
                                                 _abrirFormularioAbastecimento(
                                                     editando: a),
                                           ),
                                           IconButton(
-                                            icon: const Icon(Icons.delete,
-                                                color: Colors.red),
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ),
                                             tooltip: 'Excluir abastecimento',
                                             onPressed: () async {
                                               await CacheService
