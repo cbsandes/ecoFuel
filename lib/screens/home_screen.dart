@@ -17,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Abastecimento> _abastecimentos = [];
   bool _carregando = true;
   int _mesFiltroResumo = DateTime.now().month;
+  int _anoFiltroResumo = DateTime.now().year;
 
   static const List<String> nomesMeses = [
     'Janeiro',
@@ -48,6 +49,16 @@ class _HomeScreenState extends State<HomeScreen> {
       _abastecimentos = abastecimentos;
       _carregando = false;
     });
+  }
+
+  List<int> _obterAnosDisponiveis() {
+    final anoAtual = DateTime.now().year;
+    final anosSet = <int>{anoAtual - 1, anoAtual, anoAtual + 1};
+    for (final a in _abastecimentos) {
+      anosSet.add(a.ano);
+    }
+    final lista = anosSet.toList()..sort();
+    return lista;
   }
 
   Future<void> _confirmarLimparCache() async {
@@ -91,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Controle de Consumo de Veículos'),
@@ -113,8 +124,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 text: 'Veículos e Controle',
               ),
               Tab(
-                icon: Icon(Icons.analytics_outlined),
-                text: 'Consumos Médios do Mês',
+                icon: Icon(Icons.calendar_month),
+                text: 'Médias do Mês',
+              ),
+              Tab(
+                icon: Icon(Icons.bar_chart),
+                text: 'Consumo por Ano',
               ),
             ],
           ),
@@ -125,6 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   _buildAbaControleVeiculos(),
                   _buildAbaConsumosMediosMes(),
+                  _buildAbaConsumoPorAno(),
                 ],
               ),
       ),
@@ -183,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 16),
           const Text(
-            'Selecione um Veículo para acessar os Meses:',
+            'Selecione um Veículo para acessar os Meses e Anos:',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -236,35 +252,65 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ABA 2: Consumos médios do mês por carro até o presente momento (1 - KM/Litro, 2 - Preço gasto)
+  // ABA 2: Consumos médios do mês por carro até o presente momento
   Widget _buildAbaConsumosMediosMes() {
-    final anoAtual = DateTime.now().year;
+    final anosDisponiveis = _obterAnosDisponiveis();
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Wrap(
+            spacing: 16,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              const Text(
-                'Mês de Referência: ',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Mês: ',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  DropdownButton<int>(
+                    value: _mesFiltroResumo,
+                    items: List.generate(12, (i) {
+                      return DropdownMenuItem(
+                        value: i + 1,
+                        child: Text(nomesMeses[i]),
+                      );
+                    }),
+                    onChanged: (novoMes) {
+                      if (novoMes != null) {
+                        setState(() => _mesFiltroResumo = novoMes);
+                      }
+                    },
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              DropdownButton<int>(
-                value: _mesFiltroResumo,
-                items: List.generate(12, (i) {
-                  return DropdownMenuItem(
-                    value: i + 1,
-                    child: Text('${nomesMeses[i]} / $anoAtual'),
-                  );
-                }),
-                onChanged: (novoMes) {
-                  if (novoMes != null) {
-                    setState(() => _mesFiltroResumo = novoMes);
-                  }
-                },
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Ano: ',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  DropdownButton<int>(
+                    value: _anoFiltroResumo,
+                    items: anosDisponiveis.map((ano) {
+                      return DropdownMenuItem(
+                        value: ano,
+                        child: Text('$ano'),
+                      );
+                    }).toList(),
+                    onChanged: (novoAno) {
+                      if (novoAno != null) {
+                        setState(() => _anoFiltroResumo = novoAno);
+                      }
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -272,7 +318,8 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: _veiculos.isEmpty
                 ? const Center(
-                    child: Text('Cadastre um veículo para visualizar as médias do mês.'),
+                    child: Text(
+                        'Cadastre um veículo para visualizar as médias do mês.'),
                   )
                 : ListView.builder(
                     itemCount: _veiculos.length,
@@ -282,7 +329,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           .where((a) =>
                               a.veiculoId == v.id &&
                               a.mes == _mesFiltroResumo &&
-                              a.ano == anoAtual)
+                              a.ano == _anoFiltroResumo)
                           .toList();
 
                       double somaKmRodados = 0;
@@ -306,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${v.placa} - ${v.tipo} (${nomesMeses[_mesFiltroResumo - 1]})',
+                                '${v.placa} - ${v.tipo} (${nomesMeses[_mesFiltroResumo - 1]} / $_anoFiltroResumo)',
                                 style: const TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
@@ -334,6 +381,146 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ABA 3: Somente Consumo por Ano
+  Widget _buildAbaConsumoPorAno() {
+    final anosDisponiveis = _obterAnosDisponiveis();
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text(
+                'Selecione o Ano de Referência: ',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(width: 12),
+              DropdownButton<int>(
+                value: _anoFiltroResumo,
+                items: anosDisponiveis.map((ano) {
+                  return DropdownMenuItem(
+                    value: ano,
+                    child: Text('$ano'),
+                  );
+                }).toList(),
+                onChanged: (novoAno) {
+                  if (novoAno != null) {
+                    setState(() => _anoFiltroResumo = novoAno);
+                  }
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Expanded(
+            child: _veiculos.isEmpty
+                ? const Center(
+                    child: Text(
+                      'Cadastre um veículo para analisar o Consumo por Ano.',
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: _veiculos.length,
+                    itemBuilder: (context, index) {
+                      final v = _veiculos[index];
+                      return _buildCardConsumoAnual(v, _anoFiltroResumo);
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCardConsumoAnual(Veiculo v, int anoSelecionado) {
+    final registrosAno = _abastecimentos
+        .where((a) => a.veiculoId == v.id && a.ano == anoSelecionado)
+        .toList();
+
+    double kmRodadosAno = 0;
+    double litrosAnoTotal = 0;
+    double litrosGasolinaAno = 0;
+    double litrosAlcoolAno = 0;
+    double gastoTotalAno = 0;
+    final mesesComAbastecimentoNoAno = <int>{};
+
+    for (final r in registrosAno) {
+      kmRodadosAno += r.kmRodados;
+      litrosAnoTotal += r.litros;
+      if (r.tipoCombustivel == 'Gasolina') {
+        litrosGasolinaAno += r.litros;
+      } else {
+        litrosAlcoolAno += r.litros;
+      }
+      gastoTotalAno += r.totalGasto;
+      mesesComAbastecimentoNoAno.add(r.mes);
+    }
+
+    final double mediaKmLitroAno =
+        litrosAnoTotal > 0 ? kmRodadosAno / litrosAnoTotal : 0.0;
+    final double mediaGastoMensalAno = mesesComAbastecimentoNoAno.isNotEmpty
+        ? gastoTotalAno / mesesComAbastecimentoNoAno.length
+        : 0.0;
+
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.directions_car, color: Colors.blueGrey),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '${v.placa} - ${v.tipo} (Ano $anoSelecionado)',
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 20),
+            Text(
+              '• Consumo Médio no Ano (KM/Litro): ${mediaKmLitroAno.toStringAsFixed(2)} KM/L',
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Colors.indigo,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '• Total de Litros Abastecidos em $anoSelecionado: ${litrosAnoTotal.toStringAsFixed(2)} L (Gasolina: ${litrosGasolinaAno.toStringAsFixed(2)} L | Álcool: ${litrosAlcoolAno.toStringAsFixed(2)} L)',
+              style: const TextStyle(fontSize: 14.5),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '• Quilometragem Rodada em $anoSelecionado: ${kmRodadosAno.toStringAsFixed(1)} KM (${registrosAno.length} abastecimento(s))',
+              style: const TextStyle(fontSize: 14.5),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '• Total Gasto no Ano: R\$ ${gastoTotalAno.toStringAsFixed(2)} (Média nos meses abastecidos: R\$ ${mediaGastoMensalAno.toStringAsFixed(2)}/mês)',
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Colors.green,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

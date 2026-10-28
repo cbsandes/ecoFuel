@@ -385,9 +385,9 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
     final metaMediaEsperada = somaMetas / _listaMes.length;
 
     if (mediaKmPorLitro >= metaMediaEsperada) {
-      return 'NA MÉDIA DO MERCADO (Fazendo ${mediaKmPorLitro.toStringAsFixed(2)} KM/L | Esperado: ${metaMediaEsperada.toStringAsFixed(1)} KM/L)';
+      return 'Média de mercado \nFazendo ${mediaKmPorLitro.toStringAsFixed(2)} KM/L | Esperado: ${metaMediaEsperada.toStringAsFixed(1)} KM/L';
     } else {
-      return 'CONSUMINDO DEMAIS! (Fazendo ${mediaKmPorLitro.toStringAsFixed(2)} KM/L | Abaixo da tabela de ${metaMediaEsperada.toStringAsFixed(1)} KM/L)';
+      return 'Consumo elevado! \nFazendo ${mediaKmPorLitro.toStringAsFixed(2)} KM/L | Abaixo da tabela de ${metaMediaEsperada.toStringAsFixed(1)} KM/L';
     }
   }
 
@@ -419,7 +419,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          '${widget.nomeMes}/${widget.ano} - ${widget.veiculo.placa} (${widget.veiculo.tipo})',
+          '${widget.nomeMes}/${widget.ano} - ${widget.veiculo.placa}',
         ),
         actions: [
           Padding(
@@ -463,7 +463,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                             padding: EdgeInsets.all(24.0),
                             child: Center(
                               child: Text(
-                                'Nenhum abastecimento registrado neste mês. Clique em "Adicionar Abastecimento" no topo.',
+                                'Nenhum abastecimento registrado neste mês. Clique em "Adicionar Abastecimento".',
                               ),
                             ),
                           )
@@ -569,7 +569,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Rodapé da Tabela — Resumo do Mês até o Momento:',
+                            'Resumo do Mês até o Momento:',
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
@@ -577,12 +577,12 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            '• Total Gasto no Mês: R\$ ${totalGastoMes.toStringAsFixed(2)} (Média gasta por abastecimento: R\$ ${mediaGastoPorAbastecimento.toStringAsFixed(2)})',
+                            '• Total Gasto no Mês: R\$ ${totalGastoMes.toStringAsFixed(2)} \nMédia gasta por abastecimento: R\$ ${mediaGastoPorAbastecimento.toStringAsFixed(2)}',
                             style: const TextStyle(fontSize: 14),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '• Média de KMs Rodados até o momento: ${mediaKmRodados.toStringAsFixed(1)} KM por abastecimento (Total rodado no mês: ${somaKmRodados.toStringAsFixed(1)} KM)',
+                            '• Média de KMs Rodados até o momento: ${mediaKmRodados.toStringAsFixed(1)} KM por abastecimento \nTotal rodado no mês: ${somaKmRodados.toStringAsFixed(1)} KM',
                             style: const TextStyle(fontSize: 14),
                           ),
                           const SizedBox(height: 4),
@@ -604,7 +604,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
-                              'Diagnóstico de Mercado: $statusMercado',
+                              'Diagnóstico de consumo: $statusMercado',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: statusMercado.startsWith('NA MÉDIA')
