@@ -22,6 +22,23 @@ class CacheService {
     await prefs.setStringList(_keyVeiculos, listaJson);
   }
 
+  // Remove um veículo específico e todos os abastecimentos vinculados a ele
+  static Future<void> excluirVeiculo(String veiculoId) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // 1. Remove o veículo da lista de veículos
+    final veiculos = await carregarVeiculos();
+    veiculos.removeWhere((v) => v.id == veiculoId);
+    final veiculosJson = veiculos.map((v) => v.toJson()).toList();
+    await prefs.setStringList(_keyVeiculos, veiculosJson);
+
+    // 2. Remove os abastecimentos daquele veículo para não deixar lixo no cache
+    final abastecimentos = await carregarAbastecimentos();
+    abastecimentos.removeWhere((a) => a.veiculoId == veiculoId);
+    final abastecimentosJson = abastecimentos.map((a) => a.toJson()).toList();
+    await prefs.setStringList(_keyAbastecimentos, abastecimentosJson);
+  }
+
   // Carrega todos os abastecimentos salvos em cache
   static Future<List<Abastecimento>> carregarAbastecimentos() async {
     final prefs = await SharedPreferences.getInstance();

@@ -61,6 +61,45 @@ class _HomeScreenState extends State<HomeScreen> {
     return lista;
   }
 
+  // Confirma a exclusão individual de um veículo já criado
+  Future<void> _confirmarExcluirVeiculo(Veiculo veiculo) async {
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Remover Veículo?'),
+        content: Text(
+          'Deseja remover o veículo de placa "${veiculo.placa}" (${veiculo.tipo}) e todos os abastecimentos vinculados a ele?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text(
+              'Remover Veículo',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmar == true) {
+      await CacheService.excluirVeiculo(veiculo.id);
+      await _carregarDados();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Veículo ${veiculo.placa} removido com sucesso!'),
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _confirmarLimparCache() async {
     final confirmar = await showDialog<bool>(
       context: context,
@@ -147,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ABA 1: Acesso aos veículos separadamente + botão para a tela dedicada de cadastro
+  // ABA 1: Acesso aos veículos separadamente + opção de remover veículo + botão para tela de cadastro
   Widget _buildAbaControleVeiculos() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -232,7 +271,21 @@ class _HomeScreenState extends State<HomeScreen> {
                           subtitle: Text(
                             'KM Inicial: ${v.kmInicial.toStringAsFixed(1)} | Meta Mercado: Gasolina ${v.mediaMercadoGasolina} KM/L • Álcool ${v.mediaMercadoAlcool} KM/L',
                           ),
-                          trailing: const Icon(Icons.arrow_forward_ios),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.red,
+                                ),
+                                tooltip: 'Remover este veículo',
+                                onPressed: () => _confirmarExcluirVeiculo(v),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.arrow_forward_ios, size: 18),
+                            ],
+                          ),
                           onTap: () async {
                             await Navigator.push(
                               context,
