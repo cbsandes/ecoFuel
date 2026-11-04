@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../main.dart';
 import '../models/veiculo.dart';
 import '../models/abastecimento.dart';
 import '../services/cache_service.dart';
@@ -55,19 +56,20 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
           title: Row(
             children: [
-              const Icon(Icons.local_gas_station, color: Colors.blueGrey),
+              const Icon(
+                Icons.local_gas_station,
+                color: AppColors.verdeEletrico,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Detalhes do Abastecimento (${item.data})',
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
+                    color: AppColors.brancoLeitura,
                   ),
                 ),
               ),
@@ -83,7 +85,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: Colors.blueGrey,
+                    color: AppColors.verdeEletrico,
                   ),
                 ),
                 const Divider(height: 20),
@@ -131,8 +133,11 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                 Navigator.pop(ctx);
                 _abrirFormularioAbastecimento(editando: item);
               },
-              icon: const Icon(Icons.edit, color: Colors.orange),
-              label: const Text('Editar'),
+              icon: const Icon(Icons.edit, color: AppColors.verdeEletrico),
+              label: const Text(
+                'Editar',
+                style: TextStyle(color: AppColors.verdeEletrico),
+              ),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(ctx),
@@ -159,7 +164,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
               rotulo,
               style: const TextStyle(
                 fontSize: 14,
-                color: Colors.black87,
+                color: AppColors.cinzaSecundario,
               ),
             ),
           ),
@@ -172,7 +177,9 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: destaque ? FontWeight.bold : FontWeight.w500,
-                color: destaque ? Colors.indigo : Colors.black,
+                color: destaque
+                    ? AppColors.verdeEletrico
+                    : AppColors.brancoLeitura,
               ),
             ),
           ),
@@ -227,24 +234,28 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                     children: [
                       TextFormField(
                         controller: dataCtrl,
+                        style: const TextStyle(color: AppColors.brancoLeitura),
                         decoration: const InputDecoration(
                           labelText: 'Data do Abastecimento (dd/MM/aaaa)',
                         ),
                         validator: (v) =>
                             v == null || v.isEmpty ? 'Informe a data' : null,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       TextFormField(
                         controller: postoCtrl,
+                        style: const TextStyle(color: AppColors.brancoLeitura),
                         decoration: const InputDecoration(
                           labelText: 'Posto que abasteceu',
                         ),
                         validator: (v) =>
                             v == null || v.isEmpty ? 'Informe o posto' : null,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
                         value: combustivelSelecionado,
+                        dropdownColor: AppColors.superficieCard,
+                        style: const TextStyle(color: AppColors.brancoLeitura),
                         decoration: const InputDecoration(
                           labelText: 'Tipo de Combustível',
                         ),
@@ -264,9 +275,10 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                           }
                         },
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       TextFormField(
                         controller: kmAnteriorCtrl,
+                        style: const TextStyle(color: AppColors.brancoLeitura),
                         keyboardType: const TextInputType.numberWithOptions(
                             decimal: true),
                         decoration: const InputDecoration(
@@ -276,9 +288,10 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                             ? 'Informe o KM anterior'
                             : null,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       TextFormField(
                         controller: kmAtualCtrl,
+                        style: const TextStyle(color: AppColors.brancoLeitura),
                         keyboardType: const TextInputType.numberWithOptions(
                             decimal: true),
                         decoration: const InputDecoration(
@@ -296,9 +309,10 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       TextFormField(
                         controller: precoLitroCtrl,
+                        style: const TextStyle(color: AppColors.brancoLeitura),
                         keyboardType: const TextInputType.numberWithOptions(
                             decimal: true),
                         decoration: const InputDecoration(
@@ -308,9 +322,10 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                             ? 'Informe o R\$ por litro'
                             : null,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       TextFormField(
                         controller: litrosCtrl,
+                        style: const TextStyle(color: AppColors.brancoLeitura),
                         keyboardType: const TextInputType.numberWithOptions(
                             decimal: true),
                         decoration: const InputDecoration(
@@ -333,7 +348,10 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(ctx),
-                  child: const Text('Cancelar'),
+                  child: const Text(
+                    'Cancelar',
+                    style: TextStyle(color: AppColors.cinzaSecundario),
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -385,9 +403,9 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
     final metaMediaEsperada = somaMetas / _listaMes.length;
 
     if (mediaKmPorLitro >= metaMediaEsperada) {
-      return 'Média de mercado \nFazendo ${mediaKmPorLitro.toStringAsFixed(2)} KM/L | Esperado: ${metaMediaEsperada.toStringAsFixed(1)} KM/L';
+      return 'NA MÉDIA DO MERCADO (Fazendo ${mediaKmPorLitro.toStringAsFixed(2)} KM/L | Esperado: ${metaMediaEsperada.toStringAsFixed(1)} KM/L)';
     } else {
-      return 'Consumo elevado! \nFazendo ${mediaKmPorLitro.toStringAsFixed(2)} KM/L | Abaixo da tabela de ${metaMediaEsperada.toStringAsFixed(1)} KM/L';
+      return 'CONSUMINDO DEMAIS! (Fazendo ${mediaKmPorLitro.toStringAsFixed(2)} KM/L | Abaixo da tabela de ${metaMediaEsperada.toStringAsFixed(1)} KM/L)';
     }
   }
 
@@ -410,16 +428,17 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
     final double mediaKmPorLitro =
         somaLitros > 0 ? somaKmRodados / somaLitros : 0.0;
     final String statusMercado = _avaliarConsumoMercado(mediaKmPorLitro);
+    final bool dentroDaMedia = statusMercado.startsWith('NA MÉDIA');
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: AppColors.verdeEletrico),
           tooltip: 'Voltar',
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          '${widget.nomeMes}/${widget.ano} - ${widget.veiculo.placa}',
+          '${widget.nomeMes}/${widget.ano} - ${widget.veiculo.placa} (${widget.veiculo.tipo})',
         ),
         actions: [
           Padding(
@@ -439,9 +458,8 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
           children: [
             // TABELA DE ABASTECIMENTOS DO MÊS (FILTRADA)
             Card(
-              elevation: 2,
               child: Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(14.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -450,20 +468,27 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                       style: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
+                        color: AppColors.brancoLeitura,
                       ),
                     ),
                     const SizedBox(height: 4),
                     const Text(
                       'Dica: Clique em qualquer abastecimento da tabela para abrir a janela flutuante com todos os detalhes de KM, veículo e combustível.',
-                      style: TextStyle(fontSize: 13, color: Colors.black54),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.cinzaSecundario,
+                      ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     _listaMes.isEmpty
                         ? const Padding(
                             padding: EdgeInsets.all(24.0),
                             child: Center(
                               child: Text(
-                                'Nenhum abastecimento registrado neste mês. Clique em "Adicionar Abastecimento".',
+                                'Nenhum abastecimento registrado neste mês. Clique em "Adicionar Abastecimento" no topo.',
+                                style: TextStyle(
+                                  color: AppColors.cinzaSecundario,
+                                ),
                               ),
                             ),
                           )
@@ -472,7 +497,11 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                             child: DataTable(
                               showCheckboxColumn: false,
                               headingRowColor: WidgetStateProperty.all(
-                                Colors.blueGrey.shade100,
+                                AppColors.verdeProfundo,
+                              ),
+                              headingTextStyle: const TextStyle(
+                                color: AppColors.brancoLeitura,
+                                fontWeight: FontWeight.bold,
                               ),
                               columns: const [
                                 DataColumn(label: Text('Data')),
@@ -484,21 +513,40 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                               ],
                               rows: _listaMes.map((a) {
                                 return DataRow(
-                                  // Ao clicar na linha, abre a janela flutuante com as informações restantes
                                   onSelectChanged: (_) =>
                                       _mostrarDetalhesAbastecimento(a),
                                   cells: [
-                                    DataCell(Text(a.data)),
-                                    DataCell(Text(a.posto)),
                                     DataCell(
-                                      Text('${a.litros.toStringAsFixed(2)} L'),
+                                      Text(
+                                        a.data,
+                                        style: const TextStyle(
+                                          color: AppColors.cinzaSecundario,
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Text(
+                                        a.posto,
+                                        style: const TextStyle(
+                                          color: AppColors.brancoLeitura,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Text(
+                                        '${a.litros.toStringAsFixed(2)} L',
+                                        style: const TextStyle(
+                                          color: AppColors.brancoLeitura,
+                                        ),
+                                      ),
                                     ),
                                     DataCell(
                                       Text(
                                         '${a.kmPorLitro.toStringAsFixed(2)} KM/L',
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.blueAccent,
+                                          color: AppColors.brancoLeitura,
                                         ),
                                       ),
                                     ),
@@ -507,7 +555,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                                         'R\$ ${a.totalGasto.toStringAsFixed(2)}',
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.green,
+                                          color: AppColors.verdeEletrico,
                                         ),
                                       ),
                                     ),
@@ -518,7 +566,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                                           IconButton(
                                             icon: const Icon(
                                               Icons.visibility,
-                                              color: Colors.blueGrey,
+                                              color: AppColors.cinzaSecundario,
                                             ),
                                             tooltip: 'Ver detalhes completos',
                                             onPressed: () =>
@@ -527,7 +575,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                                           IconButton(
                                             icon: const Icon(
                                               Icons.edit,
-                                              color: Colors.orange,
+                                              color: AppColors.verdeEletrico,
                                             ),
                                             tooltip: 'Editar abastecimento',
                                             onPressed: () =>
@@ -536,8 +584,8 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                                           ),
                                           IconButton(
                                             icon: const Icon(
-                                              Icons.delete,
-                                              color: Colors.red,
+                                              Icons.delete_outline,
+                                              color: Colors.redAccent,
                                             ),
                                             tooltip: 'Excluir abastecimento',
                                             onPressed: () async {
@@ -555,61 +603,75 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                             ),
                           ),
 
-                    const Divider(height: 28, thickness: 1.5),
+                    const Divider(height: 28),
 
-                    // RODAPÉ DA TABELA COM TOTAIS E MÉDIAS
+                    // RODAPÉ DA TABELA DESTACADO EM VERDE PROFUNDO COM TOTAIS E MÉDIAS
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: Colors.blueGrey.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blueGrey.shade200),
+                        color: AppColors.verdeProfundo,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: AppColors.verdeEletrico.withValues(alpha: 0.5),
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Resumo do Mês até o Momento:',
+                            'Rodapé da Tabela — Resumo do Mês até o Momento:',
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
+                              color: AppColors.brancoLeitura,
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            '• Total Gasto no Mês: R\$ ${totalGastoMes.toStringAsFixed(2)} \nMédia gasta por abastecimento: R\$ ${mediaGastoPorAbastecimento.toStringAsFixed(2)}',
-                            style: const TextStyle(fontSize: 14),
+                            '• Total Gasto no Mês: R\$ ${totalGastoMes.toStringAsFixed(2)} (Média por abastecimento: R\$ ${mediaGastoPorAbastecimento.toStringAsFixed(2)})',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.verdeEletrico,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '• Média de KMs Rodados até o momento: ${mediaKmRodados.toStringAsFixed(1)} KM por abastecimento \nTotal rodado no mês: ${somaKmRodados.toStringAsFixed(1)} KM',
-                            style: const TextStyle(fontSize: 14),
+                            '• Média de KMs Rodados até o momento: ${mediaKmRodados.toStringAsFixed(1)} KM por abastecimento (Total no mês: ${somaKmRodados.toStringAsFixed(1)} KM)',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.brancoLeitura,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             '• Média de Consumo (KM/Litro) até o momento: ${mediaKmPorLitro.toStringAsFixed(2)} KM/L',
                             style: const TextStyle(
                               fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.brancoLeitura,
                             ),
                           ),
-                          const SizedBox(height: 6),
+                          const SizedBox(height: 10),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 6),
+                                horizontal: 10, vertical: 8),
                             decoration: BoxDecoration(
-                              color: statusMercado.startsWith('NA MÉDIA')
-                                  ? Colors.green.shade100
-                                  : Colors.amber.shade100,
+                              color: AppColors.pretoGrafite,
                               borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: dentroDaMedia
+                                    ? AppColors.verdeEletrico
+                                    : Colors.amberAccent,
+                              ),
                             ),
                             child: Text(
-                              'Diagnóstico de consumo: $statusMercado',
+                              'Diagnóstico de Mercado: $statusMercado',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: statusMercado.startsWith('NA MÉDIA')
-                                    ? Colors.green.shade900
-                                    : Colors.red.shade900,
+                                color: dentroDaMedia
+                                    ? AppColors.verdeEletrico
+                                    : Colors.amberAccent,
                               ),
                             ),
                           ),
@@ -623,11 +685,11 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
 
             const SizedBox(height: 16),
 
-            // BOTÃO IMPRIMIR TABELA (.PDF) LOGO ABAIXO DA TABELA
+            // BOTÃO IMPRIMIR TABELA (.PDF) LOGO ABAIXO DA TABELA (EM VERDE ELÉTRICO)
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.indigo,
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.verdeEletrico,
+                foregroundColor: AppColors.pretoGrafite,
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               onPressed: _listaMes.isEmpty
@@ -657,7 +719,10 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
             // BOTÃO VOLTAR
             OutlinedButton.icon(
               onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.arrow_back),
+              icon: const Icon(
+                Icons.arrow_back,
+                color: AppColors.verdeEletrico,
+              ),
               label: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 10.0),
                 child: Text('Voltar para os Meses do Veículo'),

@@ -5,6 +5,10 @@ import '../models/veiculo.dart';
 import '../models/abastecimento.dart';
 
 class PdfService {
+  static final PdfColor _verdeEletrico = PdfColor.fromInt(0xFF00D084);
+  static final PdfColor _verdeProfundo = PdfColor.fromInt(0xFF0B3D2E);
+  static final PdfColor _cinzaSecundario = PdfColor.fromInt(0xFF6B7280);
+
   static Future<void> gerarPdfDoMes({
     required Veiculo veiculo,
     required String nomeMes,
@@ -37,12 +41,16 @@ class PdfService {
                     style: pw.TextStyle(
                       fontSize: 18,
                       fontWeight: pw.FontWeight.bold,
+                      color: _verdeProfundo,
                     ),
                   ),
                   pw.SizedBox(height: 4),
                   pw.Text(
                     'Referência de Mercado cadastrada: Gasolina ${veiculo.mediaMercadoGasolina.toStringAsFixed(1)} KM/L | Álcool ${veiculo.mediaMercadoAlcool.toStringAsFixed(1)} KM/L',
-                    style: const pw.TextStyle(fontSize: 10),
+                    style: pw.TextStyle(
+                      fontSize: 10,
+                      color: _cinzaSecundario,
+                    ),
                   ),
                 ],
               ),
@@ -70,8 +78,8 @@ class PdfService {
                 fontSize: 9,
                 color: PdfColors.white,
               ),
-              headerDecoration: const pw.BoxDecoration(
-                color: PdfColors.blueGrey800,
+              headerDecoration: pw.BoxDecoration(
+                color: _verdeProfundo,
               ),
               cellStyle: const pw.TextStyle(fontSize: 8.5),
               cellAlignment: pw.Alignment.center,
@@ -99,8 +107,8 @@ class PdfService {
             pw.Container(
               padding: const pw.EdgeInsets.all(12),
               decoration: pw.BoxDecoration(
-                color: PdfColors.grey200,
-                border: pw.Border.all(color: PdfColors.grey500),
+                color: PdfColors.grey100,
+                border: pw.Border.all(color: _verdeEletrico, width: 1.5),
                 borderRadius: const pw.BorderRadius.all(pw.Radius.circular(6)),
               ),
               child: pw.Column(
@@ -111,6 +119,7 @@ class PdfService {
                     style: pw.TextStyle(
                       fontSize: 12,
                       fontWeight: pw.FontWeight.bold,
+                      color: _verdeProfundo,
                     ),
                   ),
                   pw.SizedBox(height: 6),
@@ -131,6 +140,7 @@ class PdfService {
                     style: pw.TextStyle(
                       fontSize: 10,
                       fontWeight: pw.FontWeight.bold,
+                      color: _verdeProfundo,
                     ),
                   ),
                 ],

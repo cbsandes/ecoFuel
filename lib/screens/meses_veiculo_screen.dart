@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../main.dart';
 import '../models/veiculo.dart';
 import '../models/abastecimento.dart';
 import '../services/cache_service.dart';
@@ -78,7 +79,7 @@ class _MesesVeiculoScreenState extends State<MesesVeiculoScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: AppColors.verdeEletrico),
           tooltip: 'Voltar',
           onPressed: () => Navigator.pop(context),
         ),
@@ -91,11 +92,16 @@ class _MesesVeiculoScreenState extends State<MesesVeiculoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // PAINEL SUPERIOR: SELETOR DE ANO + CONSUMO POR ANO
+            // PAINEL SUPERIOR DESTACADO EM VERDE PROFUNDO: SELETOR DE ANO + CONSUMO POR ANO
             Card(
-              color: Colors.blueGrey.shade50,
+              color: AppColors.verdeProfundo,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side:
+                    const BorderSide(color: AppColors.verdeEletrico, width: 1),
+              ),
               child: Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(14.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -107,16 +113,25 @@ class _MesesVeiculoScreenState extends State<MesesVeiculoScreen> {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            color: AppColors.brancoLeitura,
                           ),
                         ),
                         Row(
                           children: [
                             const Text(
                               'Ano: ',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.brancoLeitura,
+                              ),
                             ),
                             DropdownButton<int>(
                               value: _anoSelecionado,
+                              dropdownColor: AppColors.superficieCard,
+                              style: const TextStyle(
+                                color: AppColors.verdeEletrico,
+                                fontWeight: FontWeight.bold,
+                              ),
                               items: _obterAnosDisponiveis().map((ano) {
                                 return DropdownMenuItem(
                                   value: ano,
@@ -133,12 +148,21 @@ class _MesesVeiculoScreenState extends State<MesesVeiculoScreen> {
                         ),
                       ],
                     ),
-                    const Divider(),
+                    const Divider(color: AppColors.verdeEletrico),
                     Text(
-                      '• Média Anual: ${mediaKmLitroAno.toStringAsFixed(2)} KM/L | Litros no Ano: ${totalLitrosAno.toStringAsFixed(1)} L | Rodado no Ano: ${totalKmAno.toStringAsFixed(1)} KM | Total Gasto: R\$ ${totalGastoAno.toStringAsFixed(2)}',
+                      '• Média Anual: ${mediaKmLitroAno.toStringAsFixed(2)} KM/L  |  Litros: ${totalLitrosAno.toStringAsFixed(1)} L  |  Rodado: ${totalKmAno.toStringAsFixed(1)} KM',
                       style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 13.5,
+                        color: AppColors.brancoLeitura,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '• Total Gasto no Ano: R\$ ${totalGastoAno.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.verdeEletrico,
                       ),
                     ),
                   ],
@@ -148,7 +172,11 @@ class _MesesVeiculoScreenState extends State<MesesVeiculoScreen> {
             const SizedBox(height: 12),
             Text(
               'Selecione o mês por extenso ($_anoSelecionado) para ver ou cadastrar abastecimentos:',
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: AppColors.brancoLeitura,
+              ),
             ),
             const SizedBox(height: 8),
             Expanded(
@@ -176,11 +204,16 @@ class _MesesVeiculoScreenState extends State<MesesVeiculoScreen> {
                     child: ListTile(
                       leading: CircleAvatar(
                         backgroundColor: doMes.isNotEmpty
-                            ? Colors.blue.shade700
-                            : Colors.grey.shade400,
+                            ? AppColors.verdeEletrico
+                            : AppColors.verdeProfundo,
                         child: Text(
                           '$numeroMes',
-                          style: const TextStyle(color: Colors.white),
+                          style: TextStyle(
+                            color: doMes.isNotEmpty
+                                ? AppColors.pretoGrafite
+                                : AppColors.cinzaSecundario,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       title: Text(
@@ -188,14 +221,23 @@ class _MesesVeiculoScreenState extends State<MesesVeiculoScreen> {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
+                          color: AppColors.brancoLeitura,
                         ),
                       ),
                       subtitle: Text(
                         doMes.isEmpty
                             ? 'Nenhum abastecimento registrado em $nomeMes/$_anoSelecionado'
                             : '${doMes.length} abastecimento(s) • Total: R\$ ${totalMes.toStringAsFixed(2)} • Média: ${mediaKmL.toStringAsFixed(2)} KM/L',
+                        style: TextStyle(
+                          color: doMes.isEmpty
+                              ? AppColors.cinzaSecundario
+                              : AppColors.verdeEletrico,
+                        ),
                       ),
-                      trailing: const Icon(Icons.open_in_new),
+                      trailing: const Icon(
+                        Icons.open_in_new,
+                        color: AppColors.verdeEletrico,
+                      ),
                       onTap: () async {
                         await Navigator.push(
                           context,
@@ -218,7 +260,10 @@ class _MesesVeiculoScreenState extends State<MesesVeiculoScreen> {
             const SizedBox(height: 8),
             OutlinedButton.icon(
               onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.arrow_back),
+              icon: const Icon(
+                Icons.arrow_back,
+                color: AppColors.verdeEletrico,
+              ),
               label: const Text('Voltar à Seleção de Veículos'),
             ),
           ],

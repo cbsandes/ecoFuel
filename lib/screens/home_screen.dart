@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../main.dart';
 import '../models/veiculo.dart';
 import '../models/abastecimento.dart';
 import '../services/cache_service.dart';
@@ -69,19 +70,23 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Remover Veículo?'),
         content: Text(
           'Deseja remover o veículo de placa "${veiculo.placa}" (${veiculo.tipo}) e todos os abastecimentos vinculados a ele?',
+          style: const TextStyle(color: AppColors.cinzaSecundario),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: AppColors.cinzaSecundario),
+            ),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text(
-              'Remover Veículo',
-              style: TextStyle(color: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: AppColors.brancoLeitura,
             ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Remover Veículo'),
           ),
         ],
       ),
@@ -93,7 +98,11 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Veículo ${veiculo.placa} removido com sucesso!'),
+            backgroundColor: AppColors.verdeProfundo,
+            content: Text(
+              'Veículo ${veiculo.placa} removido com sucesso!',
+              style: const TextStyle(color: AppColors.brancoLeitura),
+            ),
           ),
         );
       }
@@ -107,19 +116,23 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Limpar Cache e Reiniciar?'),
         content: const Text(
           'Todos os veículos e tabelas de abastecimento salvos em cache serão apagados e o programa voltará ao zero. Deseja continuar?',
+          style: TextStyle(color: AppColors.cinzaSecundario),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: AppColors.cinzaSecundario),
+            ),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text(
-              'Limpar Tudo',
-              style: TextStyle(color: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: AppColors.brancoLeitura,
             ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Limpar Tudo'),
           ),
         ],
       ),
@@ -131,7 +144,11 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Cache limpo! O programa foi reiniciado do zero.'),
+            backgroundColor: AppColors.verdeProfundo,
+            content: Text(
+              'Cache limpo! O programa foi reiniciado do zero.',
+              style: TextStyle(color: AppColors.brancoLeitura),
+            ),
           ),
         );
       }
@@ -151,7 +168,10 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: const Icon(Icons.delete_forever, color: Colors.redAccent),
               label: const Text(
                 'Limpar Cache',
-                style: TextStyle(color: Colors.redAccent),
+                style: TextStyle(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             const SizedBox(width: 8),
@@ -174,7 +194,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         body: _carregando
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.verdeEletrico,
+                ),
+              )
             : TabBarView(
                 children: [
                   _buildAbaControleVeiculos(),
@@ -186,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ABA 1: Acesso aos veículos separadamente + opção de remover veículo + botão para tela de cadastro
+  // ABA 1: Acesso aos veículos separadamente + card destacado em Verde Profundo
   Widget _buildAbaControleVeiculos() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -194,7 +218,11 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Card(
-            color: Colors.blueGrey.shade50,
+            color: AppColors.verdeProfundo,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: const BorderSide(color: AppColors.verdeEletrico, width: 1),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -209,11 +237,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            color: AppColors.brancoLeitura,
                           ),
                         ),
                         SizedBox(height: 4),
                         Text(
                           'Cadastre cada veículo separadamente para organizar suas planilhas mensais sem misturar dados.',
+                          style: TextStyle(
+                            fontSize: 13.5,
+                            color: AppColors.brancoLeitura,
+                          ),
                         ),
                       ],
                     ),
@@ -236,10 +269,14 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           const Text(
             'Selecione um Veículo para acessar os Meses e Anos:',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.brancoLeitura,
+            ),
           ),
           const SizedBox(height: 8),
           Expanded(
@@ -248,6 +285,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text(
                       'Nenhum veículo cadastrado em cache.\nClique em "Cadastrar Veículo" acima para começar.',
                       textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: AppColors.cinzaSecundario,
+                        fontSize: 15,
+                      ),
                     ),
                   )
                 : ListView.builder(
@@ -258,6 +299,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         margin: const EdgeInsets.symmetric(vertical: 6),
                         child: ListTile(
                           leading: CircleAvatar(
+                            backgroundColor: AppColors.verdeProfundo,
+                            foregroundColor: AppColors.verdeEletrico,
                             child: Icon(
                               v.tipo.toLowerCase().contains('moto')
                                   ? Icons.two_wheeler
@@ -266,10 +309,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           title: Text(
                             'Placa: ${v.placa} (${v.tipo})',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.brancoLeitura,
+                            ),
                           ),
                           subtitle: Text(
                             'KM Inicial: ${v.kmInicial.toStringAsFixed(1)} | Meta Mercado: Gasolina ${v.mediaMercadoGasolina} KM/L • Álcool ${v.mediaMercadoAlcool} KM/L',
+                            style: const TextStyle(
+                              color: AppColors.cinzaSecundario,
+                            ),
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -277,13 +326,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               IconButton(
                                 icon: const Icon(
                                   Icons.delete_outline,
-                                  color: Colors.red,
+                                  color: Colors.redAccent,
                                 ),
                                 tooltip: 'Remover este veículo',
                                 onPressed: () => _confirmarExcluirVeiculo(v),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(Icons.arrow_forward_ios, size: 18),
+                              const Icon(
+                                Icons.arrow_forward_ios,
+                                size: 18,
+                                color: AppColors.verdeEletrico,
+                              ),
                             ],
                           ),
                           onTap: () async {
@@ -324,10 +377,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   const Text(
                     'Mês: ',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.brancoLeitura,
+                    ),
                   ),
                   DropdownButton<int>(
                     value: _mesFiltroResumo,
+                    dropdownColor: AppColors.superficieCard,
+                    style: const TextStyle(color: AppColors.verdeEletrico),
                     items: List.generate(12, (i) {
                       return DropdownMenuItem(
                         value: i + 1,
@@ -347,10 +406,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   const Text(
                     'Ano: ',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.brancoLeitura,
+                    ),
                   ),
                   DropdownButton<int>(
                     value: _anoFiltroResumo,
+                    dropdownColor: AppColors.superficieCard,
+                    style: const TextStyle(color: AppColors.verdeEletrico),
                     items: anosDisponiveis.map((ano) {
                       return DropdownMenuItem(
                         value: ano,
@@ -372,7 +437,9 @@ class _HomeScreenState extends State<HomeScreen> {
             child: _veiculos.isEmpty
                 ? const Center(
                     child: Text(
-                        'Cadastre um veículo para visualizar as médias do mês.'),
+                      'Cadastre um veículo para visualizar as médias do mês.',
+                      style: TextStyle(color: AppColors.cinzaSecundario),
+                    ),
                   )
                 : ListView.builder(
                     itemCount: _veiculos.length,
@@ -405,26 +472,70 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                '${v.placa} - ${v.tipo} (${nomesMeses[_mesFiltroResumo - 1]} / $_anoFiltroResumo)',
-                                style: const TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '${v.placa} - ${v.tipo}',
+                                    style: const TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.brancoLeitura,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${nomesMeses[_mesFiltroResumo - 1]} / $_anoFiltroResumo (${registrosMes.length} reg.)',
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: AppColors.cinzaSecundario,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const Divider(),
-                              Text(
-                                '1 - Média de KM/Litro no mês até o momento: ${mediaKmLitro.toStringAsFixed(2)} KM/L',
-                                style: const TextStyle(fontSize: 15),
+                              const Divider(height: 20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    '1 - Média de KM/Litro no mês:',
+                                    style: TextStyle(
+                                      fontSize: 14.5,
+                                      color: AppColors.cinzaSecundario,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${mediaKmLitro.toStringAsFixed(2)} KM/L',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.brancoLeitura,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 6),
-                              Text(
-                                '2 - Preço Total Gasto no mês até o momento: R\$ ${totalGastoMes.toStringAsFixed(2)} (${registrosMes.length} abastecimento(s))',
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.green,
-                                ),
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    '2 - Preço Total Gasto no mês:',
+                                    style: TextStyle(
+                                      fontSize: 14.5,
+                                      color: AppColors.cinzaSecundario,
+                                    ),
+                                  ),
+                                  Text(
+                                    'R\$ ${totalGastoMes.toStringAsFixed(2)}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.verdeEletrico,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -451,11 +562,17 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const Text(
                 'Selecione o Ano de Referência: ',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.brancoLeitura,
+                ),
               ),
               const SizedBox(width: 12),
               DropdownButton<int>(
                 value: _anoFiltroResumo,
+                dropdownColor: AppColors.superficieCard,
+                style: const TextStyle(color: AppColors.verdeEletrico),
                 items: anosDisponiveis.map((ano) {
                   return DropdownMenuItem(
                     value: ano,
@@ -476,6 +593,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ? const Center(
                     child: Text(
                       'Cadastre um veículo para analisar o Consumo por Ano.',
+                      style: TextStyle(color: AppColors.cinzaSecundario),
                     ),
                   )
                 : ListView.builder(
@@ -523,7 +641,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
-      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -531,45 +648,78 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Row(
               children: [
-                const Icon(Icons.directions_car, color: Colors.blueGrey),
+                const Icon(Icons.directions_car, color: AppColors.verdeEletrico),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '${v.placa} - ${v.tipo} (Ano $anoSelecionado)',
+                    '${v.placa} - ${v.tipo}',
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
+                      color: AppColors.brancoLeitura,
                     ),
+                  ),
+                ),
+                Text(
+                  'Ano $anoSelecionado (${registrosAno.length} reg.)',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.cinzaSecundario,
                   ),
                 ),
               ],
             ),
             const Divider(height: 20),
             Text(
-              '• Consumo Médio no Ano (KM/Litro): ${mediaKmLitroAno.toStringAsFixed(2)} KM/L',
+              '• Consumo Médio no Ano: ${mediaKmLitroAno.toStringAsFixed(2)} KM/L',
               style: const TextStyle(
-                fontSize: 15,
+                fontSize: 15.5,
                 fontWeight: FontWeight.bold,
-                color: Colors.indigo,
+                color: AppColors.brancoLeitura,
               ),
             ),
             const SizedBox(height: 6),
             Text(
-              '• Total de Litros Abastecidos em $anoSelecionado: ${litrosAnoTotal.toStringAsFixed(2)} L (Gasolina: ${litrosGasolinaAno.toStringAsFixed(2)} L | Álcool: ${litrosAlcoolAno.toStringAsFixed(2)} L)',
-              style: const TextStyle(fontSize: 14.5),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              '• Quilometragem Rodada em $anoSelecionado: ${kmRodadosAno.toStringAsFixed(1)} KM (${registrosAno.length} abastecimento(s))',
-              style: const TextStyle(fontSize: 14.5),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              '• Total Gasto no Ano: R\$ ${gastoTotalAno.toStringAsFixed(2)} (Média nos meses abastecidos: R\$ ${mediaGastoMensalAno.toStringAsFixed(2)}/mês)',
+              '• Total de Litros em $anoSelecionado: ${litrosAnoTotal.toStringAsFixed(2)} L (Gasolina: ${litrosGasolinaAno.toStringAsFixed(2)} L | Álcool: ${litrosAlcoolAno.toStringAsFixed(2)} L)',
               style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Colors.green,
+                fontSize: 14,
+                color: AppColors.cinzaSecundario,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '• Quilometragem Rodada em $anoSelecionado: ${kmRodadosAno.toStringAsFixed(1)} KM',
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.cinzaSecundario,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.verdeProfundo,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Total Gasto no Ano: R\$ ${gastoTotalAno.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.verdeEletrico,
+                    ),
+                  ),
+                  Text(
+                    'Média: R\$ ${mediaGastoMensalAno.toStringAsFixed(2)}/mês',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.brancoLeitura,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

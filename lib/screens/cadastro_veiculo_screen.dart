@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../main.dart';
 import '../models/veiculo.dart';
 import '../services/cache_service.dart';
 
@@ -45,7 +46,13 @@ class _CadastroVeiculoScreenState extends State<CadastroVeiculoScreen> {
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Veículo cadastrado com sucesso!')),
+        const SnackBar(
+          backgroundColor: AppColors.verdeProfundo,
+          content: Text(
+            'Veículo cadastrado com sucesso!',
+            style: TextStyle(color: AppColors.brancoLeitura),
+          ),
+        ),
       );
       Navigator.pop(context);
     }
@@ -65,7 +72,7 @@ class _CadastroVeiculoScreenState extends State<CadastroVeiculoScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: AppColors.verdeEletrico),
           tooltip: 'Voltar',
           onPressed: () => Navigator.pop(context),
         ),
@@ -73,99 +80,126 @@ class _CadastroVeiculoScreenState extends State<CadastroVeiculoScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Dados do Veículo',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _placaController,
-                decoration: const InputDecoration(
-                  labelText: 'Placa do Veículo (Ex: ABC-1234 ou ABC1D23)',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (val) => val == null || val.trim().isEmpty
-                    ? 'Informe a placa do veículo'
-                    : null,
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                value: _tipoSelecionado,
-                decoration: const InputDecoration(
-                  labelText: 'Tipo do Veículo',
-                  border: OutlineInputBorder(),
-                ),
-                items: _tiposVeiculo
-                    .map((t) => DropdownMenuItem(value: t, child: Text(t)))
-                    .toList(),
-                onChanged: (val) {
-                  if (val != null) setState(() => _tipoSelecionado = val);
-                },
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _kmInicialController,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'KM Total Inicial do Odômetro',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Média Tabelada de Mercado (Para Diagnóstico de Consumo)',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Row(
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _mediaGasolinaController,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(
-                        labelText: 'Média Mercado Gasolina (KM/L)',
-                        border: OutlineInputBorder(),
-                      ),
+                  const Text(
+                    'Dados do Veículo',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.brancoLeitura,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _mediaAlcoolController,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(
-                        labelText: 'Média Mercado Álcool (KM/L)',
-                        border: OutlineInputBorder(),
-                      ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Preencha as informações principais para iniciar o controle mensal.',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.cinzaSecundario,
                     ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _placaController,
+                    style: const TextStyle(color: AppColors.brancoLeitura),
+                    decoration: const InputDecoration(
+                      labelText: 'Placa do Veículo (Ex: ABC-1234 ou ABC1D23)',
+                    ),
+                    validator: (val) => val == null || val.trim().isEmpty
+                        ? 'Informe a placa do veículo'
+                        : null,
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    value: _tipoSelecionado,
+                    dropdownColor: AppColors.superficieCard,
+                    style: const TextStyle(color: AppColors.brancoLeitura),
+                    decoration: const InputDecoration(
+                      labelText: 'Tipo do Veículo',
+                    ),
+                    items: _tiposVeiculo
+                        .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                        .toList(),
+                    onChanged: (val) {
+                      if (val != null) setState(() => _tipoSelecionado = val);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _kmInicialController,
+                    style: const TextStyle(color: AppColors.brancoLeitura),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(
+                      labelText: 'KM Total Inicial do Odômetro',
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Média Tabelada de Mercado (Para Diagnóstico de Consumo)',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.brancoLeitura,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _mediaGasolinaController,
+                          style:
+                              const TextStyle(color: AppColors.brancoLeitura),
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                          decoration: const InputDecoration(
+                            labelText: 'Média Mercado Gasolina (KM/L)',
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _mediaAlcoolController,
+                          style:
+                              const TextStyle(color: AppColors.brancoLeitura),
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                          decoration: const InputDecoration(
+                            labelText: 'Média Mercado Álcool (KM/L)',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: _salvarVeiculo,
+                    icon: const Icon(Icons.save),
+                    label: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12.0),
+                      child: Text('Salvar Veículo no Cache'),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: AppColors.verdeEletrico,
+                    ),
+                    label: const Text('Voltar à Página Anterior'),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: _salvarVeiculo,
-                icon: const Icon(Icons.save),
-                label: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12.0),
-                  child: Text('Salvar Veículo no Cache'),
-                ),
-              ),
-              const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.arrow_back),
-                label: const Text('Voltar à Página Anterior'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
