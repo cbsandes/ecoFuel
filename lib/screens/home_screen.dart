@@ -161,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Controle de Consumo de Veículos'),
+          title: const Text('Consumo de Veículos'),
           actions: [
             TextButton.icon(
               onPressed: _confirmarLimparCache,
@@ -308,14 +308,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           title: Text(
-                            'Placa: ${v.placa} (${v.tipo})',
+                            'Placa: ${v.placa}',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: AppColors.brancoLeitura,
                             ),
                           ),
                           subtitle: Text(
-                            'KM Inicial: ${v.kmInicial.toStringAsFixed(1)} | Meta Mercado: Gasolina ${v.mediaMercadoGasolina} KM/L • Álcool ${v.mediaMercadoAlcool} KM/L',
+                            'KM Inicial: ${v.kmInicial.toStringAsFixed(1)}  \nConsumo de Mercado: Gasolina ${v.mediaMercadoGasolina} KM/L • Álcool ${v.mediaMercadoAlcool} KM/L',
                             style: const TextStyle(
                               color: AppColors.cinzaSecundario,
                             ),
@@ -477,7 +477,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    '${v.placa} - ${v.tipo}',
+                                    '${v.placa}',
                                     style: const TextStyle(
                                       fontSize: 17,
                                       fontWeight: FontWeight.bold,
@@ -652,7 +652,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '${v.placa} - ${v.tipo}',
+                    '${v.placa}',
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,

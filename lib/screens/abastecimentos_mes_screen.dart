@@ -188,6 +188,91 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
     );
   }
 
+  // Widget auxiliar para criar um tópico principal do rodapé
+  Widget _buildTopicoRodape({
+    required String titulo,
+    String? valorDestaque,
+    Color corValor = AppColors.brancoLeitura,
+  }) {
+    return Row(
+      children: [
+        const Icon(
+          Icons.circle,
+          size: 7,
+          color: AppColors.verdeEletrico,
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: RichText(
+            text: TextSpan(
+              style: const TextStyle(
+                fontSize: 14.5,
+                fontWeight: FontWeight.bold,
+                color: AppColors.brancoLeitura,
+              ),
+              children: [
+                TextSpan(text: '$titulo '),
+                if (valorDestaque != null)
+                  TextSpan(
+                    text: valorDestaque,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: corValor,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Widget auxiliar para criar um subtópico espaçado e recuado no rodapé
+  Widget _buildSubtopicoRodape({
+    required String rotulo,
+    required String valor,
+    Color corValor = AppColors.brancoLeitura,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 22.0, top: 5.0),
+      child: Row(
+        children: [
+          const Text(
+            '–  ',
+            style: TextStyle(
+              color: AppColors.verdeEletrico,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 13.5,
+                  color: AppColors.cinzaSecundario,
+                ),
+                children: [
+                  TextSpan(text: '$rotulo '),
+                  TextSpan(
+                    text: valor,
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
+                      color: corValor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // Abre modal para Adicionar novo abastecimento ou Editar existente
   Future<void> _abrirFormularioAbastecimento({Abastecimento? editando}) async {
     double ultimoKmSugerido = widget.veiculo.kmInicial;
@@ -403,9 +488,9 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
     final metaMediaEsperada = somaMetas / _listaMes.length;
 
     if (mediaKmPorLitro >= metaMediaEsperada) {
-      return 'NA MÉDIA DO MERCADO (Fazendo ${mediaKmPorLitro.toStringAsFixed(2)} KM/L | Esperado: ${metaMediaEsperada.toStringAsFixed(1)} KM/L)';
+      return 'Média de mercado (Fazendo ${mediaKmPorLitro.toStringAsFixed(2)} KM/L | Esperado: ${metaMediaEsperada.toStringAsFixed(1)} KM/L)';
     } else {
-      return 'CONSUMINDO DEMAIS! (Fazendo ${mediaKmPorLitro.toStringAsFixed(2)} KM/L | Abaixo da tabela de ${metaMediaEsperada.toStringAsFixed(1)} KM/L)';
+      return 'Consumo elevado! (Fazendo ${mediaKmPorLitro.toStringAsFixed(2)} KM/L | Abaixo da tabela de ${metaMediaEsperada.toStringAsFixed(1)} KM/L)';
     }
   }
 
@@ -438,7 +523,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          '${widget.nomeMes}/${widget.ano} - ${widget.veiculo.placa} (${widget.veiculo.tipo})',
+          '${widget.nomeMes}/${widget.ano} - ${widget.veiculo.placa}',
         ),
         actions: [
           Padding(
@@ -464,7 +549,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Tabela de Abastecimentos - ${widget.nomeMes} (${widget.veiculo.placa})',
+                      'Tabela de Abastecimentos de ${widget.nomeMes}',
                       style: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
@@ -473,7 +558,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                     ),
                     const SizedBox(height: 4),
                     const Text(
-                      'Dica: Clique em qualquer abastecimento da tabela para abrir a janela flutuante com todos os detalhes de KM, veículo e combustível.',
+                      'Dica: Selecione qualquer abastecimento da tabela para visualizar todos os detalhes de KM, veículo e combustível.',
                       style: TextStyle(
                         fontSize: 13,
                         color: AppColors.cinzaSecundario,
@@ -485,7 +570,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                             padding: EdgeInsets.all(24.0),
                             child: Center(
                               child: Text(
-                                'Nenhum abastecimento registrado neste mês. Clique em "Adicionar Abastecimento" no topo.',
+                                'Nenhum abastecimento registrado neste mês. Selecione "Adicionar Abastecimento".',
                                 style: TextStyle(
                                   color: AppColors.cinzaSecundario,
                                 ),
@@ -605,9 +690,9 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
 
                     const Divider(height: 28),
 
-                    // RODAPÉ DA TABELA DESTACADO EM VERDE PROFUNDO COM TOTAIS E MÉDIAS
+                    // RODAPÉ DA TABELA COM TÓPICOS E SUBTÓPICOS ESPAÇADOS
                     Container(
-                      padding: const EdgeInsets.all(14),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: AppColors.verdeProfundo,
                         borderRadius: BorderRadius.circular(10),
@@ -619,43 +704,64 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Rodapé da Tabela — Resumo do Mês até o Momento:',
+                            'Resumo do Mês até o Momento:',
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize: 15.5,
                               fontWeight: FontWeight.bold,
                               color: AppColors.brancoLeitura,
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '• Total Gasto no Mês: R\$ ${totalGastoMes.toStringAsFixed(2)} (Média por abastecimento: R\$ ${mediaGastoPorAbastecimento.toStringAsFixed(2)})',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.verdeEletrico,
-                            ),
+                          const SizedBox(height: 14),
+
+                          // TÓPICO 1: GASTOS DO MÊS + SUBTÓPICO
+                          _buildTopicoRodape(
+                            titulo: 'Total Gasto no Mês:',
+                            valorDestaque:
+                                'R\$ ${totalGastoMes.toStringAsFixed(2)}',
+                            corValor: AppColors.verdeEletrico,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '• Média de KMs Rodados até o momento: ${mediaKmRodados.toStringAsFixed(1)} KM por abastecimento (Total no mês: ${somaKmRodados.toStringAsFixed(1)} KM)',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: AppColors.brancoLeitura,
-                            ),
+                          _buildSubtopicoRodape(
+                            rotulo: 'Média por abastecimento:',
+                            valor:
+                                'R\$ ${mediaGastoPorAbastecimento.toStringAsFixed(2)}',
+                            corValor: AppColors.verdeEletrico,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '• Média de Consumo (KM/Litro) até o momento: ${mediaKmPorLitro.toStringAsFixed(2)} KM/L',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.brancoLeitura,
-                            ),
+
+                          const SizedBox(height: 14),
+
+                          // TÓPICO 2: QUILOMETRAGEM + SUBTÓPICOS
+                          _buildTopicoRodape(
+                            titulo: 'Quilometragem Rodada até o momento:',
                           ),
-                          const SizedBox(height: 10),
+                          _buildSubtopicoRodape(
+                            rotulo: 'Total rodado no mês:',
+                            valor: '${somaKmRodados.toStringAsFixed(1)} KM',
+                          ),
+                          _buildSubtopicoRodape(
+                            rotulo: 'Média de KMs por abastecimento:',
+                            valor: '${mediaKmRodados.toStringAsFixed(1)} KM',
+                          ),
+
+                          const SizedBox(height: 14),
+
+                          // TÓPICO 3: MÉDIA DE CONSUMO + SUBTÓPICO
+                          _buildTopicoRodape(
+                            titulo: 'Média de Consumo (KM/Litro) até o momento:',
+                            valorDestaque:
+                                '${mediaKmPorLitro.toStringAsFixed(2)} KM/L',
+                          ),
+                          _buildSubtopicoRodape(
+                            rotulo: 'Referência de mercado do veículo:',
+                            valor:
+                                'Gasolina ${widget.veiculo.mediaMercadoGasolina.toStringAsFixed(1)} KM/L • Álcool ${widget.veiculo.mediaMercadoAlcool.toStringAsFixed(1)} KM/L',
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // DIAGNÓSTICO DE MERCADO
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 8),
+                                horizontal: 12, vertical: 8),
                             decoration: BoxDecoration(
                               color: AppColors.pretoGrafite,
                               borderRadius: BorderRadius.circular(6),
@@ -702,6 +808,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                         abastecimentos: _listaMes,
                         totalGastoMes: totalGastoMes,
                         mediaGastoPorAbastecimento: mediaGastoPorAbastecimento,
+                        somaKmRodados: somaKmRodados,
                         mediaKmRodados: mediaKmRodados,
                         mediaKmPorLitro: mediaKmPorLitro,
                         statusConsumoMercado: statusMercado,

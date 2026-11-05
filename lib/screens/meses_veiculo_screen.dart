@@ -84,7 +84,7 @@ class _MesesVeiculoScreenState extends State<MesesVeiculoScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Meses - ${widget.veiculo.placa} (${widget.veiculo.tipo})',
+          'Meses - ${widget.veiculo.placa}',
         ),
       ),
       body: Padding(
@@ -109,7 +109,7 @@ class _MesesVeiculoScreenState extends State<MesesVeiculoScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Consumo no Ano ($_anoSelecionado)',
+                          'Consumo de $_anoSelecionado',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -171,7 +171,7 @@ class _MesesVeiculoScreenState extends State<MesesVeiculoScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Selecione o mês por extenso ($_anoSelecionado) para ver ou cadastrar abastecimentos:',
+              'Selecione o mês de $_anoSelecionado para ver ou cadastrar abastecimentos:',
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,

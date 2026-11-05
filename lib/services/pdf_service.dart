@@ -16,6 +16,7 @@ class PdfService {
     required List<Abastecimento> abastecimentos,
     required double totalGastoMes,
     required double mediaGastoPorAbastecimento,
+    required double somaKmRodados,
     required double mediaKmRodados,
     required double mediaKmPorLitro,
     required String statusConsumoMercado,
@@ -103,9 +104,9 @@ class PdfService {
 
             pw.SizedBox(height: 16),
 
-            // Rodapé da Tabela no PDF
+            // Rodapé da Tabela no PDF com Tópicos e Subtópicos espaçados
             pw.Container(
-              padding: const pw.EdgeInsets.all(12),
+              padding: const pw.EdgeInsets.all(14),
               decoration: pw.BoxDecoration(
                 color: PdfColors.grey100,
                 border: pw.Border.all(color: _verdeEletrico, width: 1.5),
@@ -122,21 +123,69 @@ class PdfService {
                       color: _verdeProfundo,
                     ),
                   ),
+                  pw.SizedBox(height: 8),
+
+                  // Tópico 1
+                  pw.Text(
+                    '• Total Gasto no Mês: R\$ ${totalGastoMes.toStringAsFixed(2)}',
+                    style: pw.TextStyle(
+                      fontSize: 10,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.only(left: 14, top: 2),
+                    child: pw.Text(
+                      '- Média por abastecimento: R\$ ${mediaGastoPorAbastecimento.toStringAsFixed(2)}',
+                      style: const pw.TextStyle(fontSize: 9.5),
+                    ),
+                  ),
                   pw.SizedBox(height: 6),
+
+                  // Tópico 2
                   pw.Text(
-                    '• Total Gasto no Mês: R\$ ${totalGastoMes.toStringAsFixed(2)} (Média por abastecimento: R\$ ${mediaGastoPorAbastecimento.toStringAsFixed(2)})',
-                    style: const pw.TextStyle(fontSize: 10),
+                    '• Quilometragem Rodada até o momento:',
+                    style: pw.TextStyle(
+                      fontSize: 10,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
                   ),
-                  pw.Text(
-                    '• Média de KMs Rodados até o momento: ${mediaKmRodados.toStringAsFixed(1)} KM por abastecimento',
-                    style: const pw.TextStyle(fontSize: 10),
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.only(left: 14, top: 2),
+                    child: pw.Text(
+                      '- Total rodado no mês: ${somaKmRodados.toStringAsFixed(1)} KM',
+                      style: const pw.TextStyle(fontSize: 9.5),
+                    ),
                   ),
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.only(left: 14, top: 2),
+                    child: pw.Text(
+                      '- Média de KMs por abastecimento: ${mediaKmRodados.toStringAsFixed(1)} KM',
+                      style: const pw.TextStyle(fontSize: 9.5),
+                    ),
+                  ),
+                  pw.SizedBox(height: 6),
+
+                  // Tópico 3
                   pw.Text(
                     '• Média de Consumo (KM/Litro) até o momento: ${mediaKmPorLitro.toStringAsFixed(2)} KM/L',
-                    style: const pw.TextStyle(fontSize: 10),
+                    style: pw.TextStyle(
+                      fontSize: 10,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
                   ),
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.only(left: 14, top: 2),
+                    child: pw.Text(
+                      '- Referência de mercado do veículo: Gasolina ${veiculo.mediaMercadoGasolina.toStringAsFixed(1)} KM/L | Álcool ${veiculo.mediaMercadoAlcool.toStringAsFixed(1)} KM/L',
+                      style: const pw.TextStyle(fontSize: 9.5),
+                    ),
+                  ),
+                  pw.SizedBox(height: 8),
+
+                  // Diagnóstico
                   pw.Text(
-                    '• Diagnóstico de Consumo vs. Mercado: $statusConsumoMercado',
+                    'Diagnóstico de Consumo vs. Mercado: $statusConsumoMercado',
                     style: pw.TextStyle(
                       fontSize: 10,
                       fontWeight: pw.FontWeight.bold,
