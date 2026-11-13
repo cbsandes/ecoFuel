@@ -452,18 +452,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               a.ano == _anoFiltroResumo)
                           .toList();
 
-                      double somaKmRodados = 0;
+                      double somaKmEfetivo = 0;
                       double somaLitros = 0;
                       double totalGastoMes = 0;
 
                       for (final r in registrosMes) {
-                        somaKmRodados += r.kmRodados;
+                        somaKmEfetivo += r.kmEfetivoConsumo;
                         somaLitros += r.litros;
                         totalGastoMes += r.totalGasto;
                       }
 
                       final double mediaKmLitro =
-                          somaLitros > 0 ? (somaKmRodados / somaLitros) : 0.0;
+                          somaLitros > 0 ? (somaKmEfetivo / somaLitros) : 0.0;
 
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 8),
@@ -477,7 +477,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    '${v.placa}',
+                                    v.placa,
                                     style: const TextStyle(
                                       fontSize: 17,
                                       fontWeight: FontWeight.bold,
@@ -615,6 +615,7 @@ class _HomeScreenState extends State<HomeScreen> {
         .toList();
 
     double kmRodadosAno = 0;
+    double kmEfetivoAno = 0;
     double litrosAnoTotal = 0;
     double litrosGasolinaAno = 0;
     double litrosAlcoolAno = 0;
@@ -623,6 +624,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     for (final r in registrosAno) {
       kmRodadosAno += r.kmRodados;
+      kmEfetivoAno += r.kmEfetivoConsumo;
       litrosAnoTotal += r.litros;
       if (r.tipoCombustivel == 'Gasolina') {
         litrosGasolinaAno += r.litros;
@@ -634,7 +636,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final double mediaKmLitroAno =
-        litrosAnoTotal > 0 ? kmRodadosAno / litrosAnoTotal : 0.0;
+        litrosAnoTotal > 0 ? kmEfetivoAno / litrosAnoTotal : 0.0;
     final double mediaGastoMensalAno = mesesComAbastecimentoNoAno.isNotEmpty
         ? gastoTotalAno / mesesComAbastecimentoNoAno.length
         : 0.0;
@@ -652,7 +654,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '${v.placa}',
+                    v.placa,
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -688,7 +690,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 6),
             Text(
-              '• Quilometragem Rodada em $anoSelecionado: ${kmRodadosAno.toStringAsFixed(1)} KM',
+              '• Quilometragem Rodada em $anoSelecionado: ${kmRodadosAno.toStringAsFixed(1)} KM (KM Efetivo: ${kmEfetivoAno.toStringAsFixed(1)} KM)',
               style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.cinzaSecundario,

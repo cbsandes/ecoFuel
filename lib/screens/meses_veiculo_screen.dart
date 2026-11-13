@@ -66,15 +66,17 @@ class _MesesVeiculoScreenState extends State<MesesVeiculoScreen> {
     // Cálculo de Consumo do Ano Selecionado
     double totalGastoAno = 0;
     double totalKmAno = 0;
+    double totalKmEfetivoAno = 0;
     double totalLitrosAno = 0;
 
     for (final a in abastecimentosDoAno) {
       totalGastoAno += a.totalGasto;
       totalKmAno += a.kmRodados;
+      totalKmEfetivoAno += a.kmEfetivoConsumo;
       totalLitrosAno += a.litros;
     }
     final double mediaKmLitroAno =
-        totalLitrosAno > 0 ? totalKmAno / totalLitrosAno : 0.0;
+        totalLitrosAno > 0 ? totalKmEfetivoAno / totalLitrosAno : 0.0;
 
     return Scaffold(
       appBar: AppBar(
@@ -190,14 +192,15 @@ class _MesesVeiculoScreenState extends State<MesesVeiculoScreen> {
                       .toList();
 
                   double totalMes = 0;
-                  double somaKm = 0;
+                  double somaKmEfetivo = 0;
                   double somaLitros = 0;
                   for (final item in doMes) {
                     totalMes += item.totalGasto;
-                    somaKm += item.kmRodados;
+                    somaKmEfetivo += item.kmEfetivoConsumo;
                     somaLitros += item.litros;
                   }
-                  final mediaKmL = somaLitros > 0 ? somaKm / somaLitros : 0.0;
+                  final mediaKmL =
+                      somaLitros > 0 ? somaKmEfetivo / somaLitros : 0.0;
 
                   return Card(
                     margin: const EdgeInsets.symmetric(vertical: 4),

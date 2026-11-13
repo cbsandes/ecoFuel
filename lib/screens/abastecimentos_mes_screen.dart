@@ -52,6 +52,9 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
 
   // Abre a janela flutuante com as informações detalhadas do abastecimento selecionado
   Future<void> _mostrarDetalhesAbastecimento(Abastecimento item) async {
+    final variacao = item.variacaoMargemTanque;
+    final sinalVariacao = variacao >= 0 ? '+' : '';
+
     await showDialog(
       context: context,
       builder: (ctx) {
@@ -101,10 +104,28 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                   '${item.kmAtual.toStringAsFixed(1)} KM',
                 ),
                 _buildLinhaDetalhe(
-                  'Diferença (KM):',
+                  'Diferença no Odômetro (KM):',
                   '${item.kmRodados.toStringAsFixed(1)} KM',
+                ),
+                const Divider(height: 16),
+                _buildLinhaDetalhe(
+                  'KM p/ esvaziar (Último abast.):',
+                  '${item.kmRestanteTanqueAnterior.toStringAsFixed(0)} KM',
+                ),
+                _buildLinhaDetalhe(
+                  'KM p/ esvaziar (Abast. recente):',
+                  '${item.kmRestanteTanqueAtual.toStringAsFixed(0)} KM',
+                ),
+                _buildLinhaDetalhe(
+                  'Variação na margem do tanque:',
+                  '$sinalVariacao${variacao.toStringAsFixed(1)} KM',
+                ),
+                _buildLinhaDetalhe(
+                  'KM Efetivo (Ajustado p/ cálculo):',
+                  '${item.kmEfetivoConsumo.toStringAsFixed(1)} KM',
                   destaque: true,
                 ),
+                const Divider(height: 16),
                 _buildLinhaDetalhe(
                   'Litros:',
                   '${item.litros.toStringAsFixed(2)} L',
@@ -115,7 +136,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                 ),
                 const Divider(height: 20),
                 _buildLinhaDetalhe(
-                  'Média deste abastecimento:',
+                  'Média real deste abastecimento:',
                   '${item.kmPorLitro.toStringAsFixed(2)} KM/L',
                   destaque: true,
                 ),
@@ -276,8 +297,11 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
   // Abre modal para Adicionar novo abastecimento ou Editar existente
   Future<void> _abrirFormularioAbastecimento({Abastecimento? editando}) async {
     double ultimoKmSugerido = widget.veiculo.kmInicial;
+    double ultimaMargemTanqueSugerida = 0.0;
+
     if (_listaMes.isNotEmpty && editando == null) {
       ultimoKmSugerido = _listaMes.last.kmAtual;
+      ultimaMargemTanqueSugerida = _listaMes.last.kmRestanteTanqueAtual;
     }
 
     final dataCtrl = TextEditingController(
@@ -289,6 +313,15 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
     );
     final kmAtualCtrl = TextEditingController(
       text: editando != null ? editando.kmAtual.toStringAsFixed(1) : '',
+    );
+    final kmRestanteAnteriorCtrl = TextEditingController(
+      text: (editando?.kmRestanteTanqueAnterior ?? ultimaMargemTanqueSugerida)
+          .toStringAsFixed(0),
+    );
+    final kmRestanteAtualCtrl = TextEditingController(
+      text: editando != null
+          ? editando.kmRestanteTanqueAtual.toStringAsFixed(0)
+          : '',
     );
     final precoLitroCtrl = TextEditingController(
       text: editando != null ? editando.precoPorLitro.toStringAsFixed(2) : '',
@@ -396,6 +429,38 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                       ),
                       const SizedBox(height: 10),
                       TextFormField(
+                        controller: kmRestanteAnteriorCtrl,
+                        style: const TextStyle(color: AppColors.brancoLeitura),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        decoration: const InputDecoration(
+                          labelText:
+                              'KM p/ esvaziar no último abastecimento (Painel)',
+                          helperText:
+                              'Quantos KM faltavam p/ esvaziar na vez anterior',
+                        ),
+                        validator: (v) => v == null || v.isEmpty
+                            ? 'Informe a margem anterior (ou 0)'
+                            : null,
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: kmRestanteAtualCtrl,
+                        style: const TextStyle(color: AppColors.brancoLeitura),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        decoration: const InputDecoration(
+                          labelText:
+                              'KM p/ esvaziar neste abastecimento (Ex: 40, 80, 100)',
+                          helperText:
+                              'Quantos KM faltavam no painel ao parar no posto hoje',
+                        ),
+                        validator: (v) => v == null || v.isEmpty
+                            ? 'Informe quantos KM faltavam p/ esvaziar'
+                            : null,
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
                         controller: precoLitroCtrl,
                         style: const TextStyle(color: AppColors.brancoLeitura),
                         keyboardType: const TextInputType.numberWithOptions(
@@ -454,6 +519,10 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                       tipoVeiculo: widget.veiculo.tipo,
                       kmAnterior: _parseDecimal(kmAnteriorCtrl.text),
                       kmAtual: _parseDecimal(kmAtualCtrl.text),
+                      kmRestanteTanqueAnterior:
+                          _parseDecimal(kmRestanteAnteriorCtrl.text),
+                      kmRestanteTanqueAtual:
+                          _parseDecimal(kmRestanteAtualCtrl.text),
                       tipoCombustivel: combustivelSelecionado,
                       precoPorLitro: _parseDecimal(precoLitroCtrl.text),
                       litros: _parseDecimal(litrosCtrl.text),
@@ -498,11 +567,13 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
   Widget build(BuildContext context) {
     double totalGastoMes = 0;
     double somaKmRodados = 0;
+    double somaKmEfetivoConsumo = 0;
     double somaLitros = 0;
 
     for (final a in _listaMes) {
       totalGastoMes += a.totalGasto;
       somaKmRodados += a.kmRodados;
+      somaKmEfetivoConsumo += a.kmEfetivoConsumo;
       somaLitros += a.litros;
     }
 
@@ -510,10 +581,11 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
     final double mediaGastoPorAbastecimento =
         qtd > 0 ? totalGastoMes / qtd : 0.0;
     final double mediaKmRodados = qtd > 0 ? somaKmRodados / qtd : 0.0;
+    // Usa o KM Efetivo (compensado pela margem de esvaziamento do tanque) para uma média real precisa
     final double mediaKmPorLitro =
-        somaLitros > 0 ? somaKmRodados / somaLitros : 0.0;
+        somaLitros > 0 ? somaKmEfetivoConsumo / somaLitros : 0.0;
     final String statusMercado = _avaliarConsumoMercado(mediaKmPorLitro);
-    final bool dentroDaMedia = statusMercado.startsWith('NA MÉDIA');
+    final bool dentroDaMedia = statusMercado.startsWith('Média de mercado');
 
     return Scaffold(
       appBar: AppBar(
@@ -558,7 +630,7 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                     ),
                     const SizedBox(height: 4),
                     const Text(
-                      'Dica: Selecione qualquer abastecimento da tabela para visualizar todos os detalhes de KM, veículo e combustível.',
+                      'Dica: Selecione qualquer abastecimento da tabela para visualizar todos os detalhes de KM, margem do tanque, veículo e combustível.',
                       style: TextStyle(
                         fontSize: 13,
                         color: AppColors.cinzaSecundario,
@@ -734,8 +806,14 @@ class _AbastecimentosMesScreenState extends State<AbastecimentosMesScreen> {
                             titulo: 'Quilometragem Rodada até o momento:',
                           ),
                           _buildSubtopicoRodape(
-                            rotulo: 'Total rodado no mês:',
+                            rotulo: 'Total físico rodado no odômetro:',
                             valor: '${somaKmRodados.toStringAsFixed(1)} KM',
+                          ),
+                          _buildSubtopicoRodape(
+                            rotulo: 'KM efetivo compensado pela margem do tanque:',
+                            valor:
+                                '${somaKmEfetivoConsumo.toStringAsFixed(1)} KM',
+                            corValor: AppColors.verdeEletrico,
                           ),
                           _buildSubtopicoRodape(
                             rotulo: 'Média de KMs por abastecimento:',
